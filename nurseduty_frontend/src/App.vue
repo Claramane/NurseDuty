@@ -8,13 +8,16 @@
       </div>
       <nav>
         <router-link to="/">首頁</router-link>
-        <router-link to="/formula-schedule">麻醉staff公式班表調整</router-link>
-        <router-link to="/por-formula">POR公式班表調整</router-link>
+        <router-link to="/formula-schedule">麻醉兄姊公式班表調整</router-link>
+        <router-link to="/por-formula">恢復室公式班表調整</router-link>
+        <router-link to="/leader-formula">大姊姊公式班表調整</router-link>
+        <router-link to="/secretary-formula">秘書公式班表調整</router-link>
         <router-link to="/monthly-schedule">月班表生成區</router-link>
-        <router-link to="/monthly-schedule-results">月班表生成結果</router-link>
       </nav>
       <StaffManagement v-if="$route.path === '/formula-schedule'" />
       <PORStaffManagement v-if="$route.path === '/por-formula'" />
+      <LeaderStaffManagement v-if="$route.path === '/leader-formula'" />
+      <SecretaryStaffManagement v-if="$route.path === '/secretary-formula'" />
     </aside>
     <main class="main-content">
       <router-view></router-view>
@@ -35,13 +38,17 @@ import { useStore } from 'vuex'
 import SettingsPanel from '@/components/SettingsPanel.vue'
 import StaffManagement from '@/components/StaffManagement.vue'
 import PORStaffManagement from '@/components/PORStaffManagement.vue'
+import SecretaryStaffManagement from './components/SecretaryStaffManagement.vue'
+import LeaderStaffManagement from './components/LeaderStaffManagement.vue'
 
 export default {
   name: 'App',
   components: {
     SettingsPanel,
     StaffManagement,
-    PORStaffManagement
+    PORStaffManagement,
+    SecretaryStaffManagement,
+    LeaderStaffManagement
   },
   setup() {
     const store = useStore()
@@ -53,9 +60,8 @@ export default {
 
     onMounted(async () => {
       try {
-        await store.dispatch('staff/initializeNurses')
-        await store.dispatch('schedule/fetchFormulaSchedules')
-        await store.dispatch('schedule/fetchPORFormulaSchedules')
+        await store.dispatch('staff/fetchNurses')
+        await store.dispatch('schedule/loadFormulaSchedules')
         await store.dispatch('settings/loadSettings')
       } catch (error) {
         console.error('Failed to initialize app data:', error)

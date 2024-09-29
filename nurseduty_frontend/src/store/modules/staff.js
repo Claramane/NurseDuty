@@ -1,81 +1,101 @@
-const initialNurses = [
-  { name: "王子夙", group: 0, role: "leader" },
-  { name: "莊佩慧", group: 0, role: "leader" },
-  { name: "黃靜玲", group: 0, role: "leader" },
-  { name: "洪秀玲", group: 0, role: "member" },
-  { name: "蔡秀金", group: 0, role: "member" },
-  { name: "張慈珮", group: 0, role: "member" },
-  { name: "許舒惠", group: 0, role: "member" },
-  { name: "何瑩慧", group: 0, role: "member" },
-  { name: "林雪美", group: 0, role: "member" },
-  { name: "謝佩陵", group: 0, role: "member" },
-  { name: "陳稚平", group: 0, role: "member" },
-  { name: "李相君", group: 0, role: "member" },
-  { name: "顧心如", group: 0, role: "member" },
-  { name: "葉朝菩", group: 0, role: "member" },
-  { name: "石育菁", group: 0, role: "member" },
-  { name: "王姿惠", group: 0, role: "member" },
-  { name: "李宥蓁", group: 0, role: "member" },
-  { name: "魏凡雅", group: 0, role: "member" },
-  { name: "周穎昇", group: 0, role: "member" },
-  { name: "趙仁傑", group: 0, role: "member" },
-  { name: "施瑩瑩", group: 0, role: "member" },
-  { name: "葉怡彣", group: 0, role: "member" },
-  { name: "邱卉羚", group: 0, role: "member" },
-  { name: "王釋璞", group: 0, role: "member" },
-  { name: "游佳蓁", group: 0, role: "member" },
-  { name: "張育蓉", group: 0, role: "member" },
-  { name: "戴培雅", group: 0, role: "member" },
-  { name: "李佳欣", group: 0, role: "member" },
-  { name: "王欣媚", group: 0, role: "member" },
-  { name: "游芷欣", group: 0, role: "member" },
-  { name: "林蓁", group: 0, role: "member" },
-  { name: "洪玉晶", group: 0, role: "POR" },
-  { name: "劉宸君", group: 0, role: "POR" },
-  { name: "蔡惠婷", group: 0, role: "POR" },
-  { name: "陳聿均", group: 0, role: "POR" },
-  { name: "李孟亭", group: 0, role: "POR" },
-  { name: "潘靜怡", group: 0, role: "POR" },
-  { name: "陳盈蓓", group: 0, role: "POR" },
-  { name: "郭淑慧", group: 0, role: "POR" },
-];
+import axios from 'axios';
+
+const API_URL = process.env.VUE_APP_API_URL ? process.env.VUE_APP_API_URL.replace(/"/g, '') : 'http://localhost:8000';
 
 export default {
-    namespaced: true,
-    state: {
-      nurses: []
+  namespaced: true,
+  state: {
+    nurses: [],
+    isLoading: false,
+    error: null,
+    lastUpdated: null
+  },
+  mutations: {
+    setNurses(state, { nurses, lastUpdated }) {
+      state.nurses = nurses;
+      state.lastUpdated = lastUpdated;
     },
-    mutations: {
-      setNurses(state, nurses) {
-        state.nurses = nurses;
-      },
-      updateNurseGroup(state, { name, group }) {
-        const nurse = state.nurses.find(n => n.name === name);
-        if (nurse) {
-          nurse.group = group;
-        }
+    setLoading(state, isLoading) {
+      state.isLoading = isLoading;
+    },
+    setError(state, error) {
+      state.error = error;
+    },
+    updateNurseGroup(state, { id, group }) {
+      const nurse = state.nurses.find(n => n.id === id);
+      if (nurse) {
+        nurse.group = group;
       }
     },
-    actions: {
-      initializeNurses({ commit, dispatch }) {
-        const savedNurses = JSON.parse(localStorage.getItem('nurses'));
-        if (savedNurses && savedNurses.length > 0) {
-          commit('setNurses', savedNurses);
-        } else {
-          commit('setNurses', initialNurses);
-          dispatch('saveNurses');
-        }
-      },
-      saveNurses({ state }) {
-        localStorage.setItem('nurses', JSON.stringify(state.nurses));
-      },
-      updateNurseGroup({ commit, dispatch }, payload) {
-        commit('updateNurseGroup', payload);
-        dispatch('saveNurses');
+    updateNurseActive(state, { id, active }) {
+      const nurse = state.nurses.find(n => n.id === id);
+      if (nurse) {
+        nurse.active = active;
       }
-    },
-    getters: {
-      allNurses: state => state.nurses,
-      memberNurses: state => state.nurses.filter(nurse => nurse.role === 'member')
     }
-  };
+  },
+  actions: {
+    async fetchNurses({ commit }) {
+      commit('setLoading', true);
+      commit('setError', null);
+      try {
+        const response = await axios.get(`${API_URL}/api/nurses`);
+        const { nurses, lastUpdated } = response.data;
+        commit('setNurses', { nurses, lastUpdated });
+      } catch (error) {
+        console.error('Failed to fetch nurses:', error);
+        commit('setError', 'Failed to load nurses. Please try again.');
+      } finally {
+        commit('setLoading', false);
+      }
+    },
+    async updateNurseGroup({ commit }, { id, group }) {
+      try {
+        await axios.put(`${API_URL}/api/nurses/${id}`, { group });
+        commit('updateNurseGroup', { id, group });
+      } catch (error) {
+        console.error('Failed to update nurse group:', error);
+        throw error;
+      }
+    },
+    async updateNurseActive({ commit }, { id, active }) {
+      try {
+        await axios.put(`${API_URL}/api/nurses/${id}`, { active });
+        commit('updateNurseActive', { id, active });
+      } catch (error) {
+        console.error('Failed to update nurse active status:', error);
+        throw error;
+      }
+    },
+    async initializeNursesFromFormula({ dispatch }, type) {
+      await dispatch('fetchNurses');
+      const formulaData = this.getters['schedule/getFormulaSchedules'](type);
+      if (formulaData) {
+        for (const [index, groupData] of formulaData.entries()) {
+          for (const nurseName of groupData.nurses) {
+            const nurse = this.state.nurses.find(n => n.name === nurseName);
+            if (nurse) {
+              await dispatch('updateNurseGroup', { id: nurse.id, group: index + 1 });
+            }
+          }
+        }
+      }
+    },
+    async resetGroups({ dispatch }) {
+      try {
+        await axios.post(`${API_URL}/api/nurses/reset-groups`);
+        await dispatch('fetchNurses');
+      } catch (error) {
+        console.error('Failed to reset nurse groups:', error);
+        throw error;
+      }
+    }
+  },
+  getters: {
+    allNurses: state => state.nurses,
+    activeNurses: state => state.nurses.filter(nurse => nurse.active),
+    nursesByRole: (state) => (role) => state.nurses.filter(nurse => nurse.role === role && nurse.active),
+    nursesByGroup: (state) => (group) => state.nurses.filter(nurse => nurse.group === group && nurse.active),
+    lastUpdateTime: state => state.lastUpdated
+  }
+};

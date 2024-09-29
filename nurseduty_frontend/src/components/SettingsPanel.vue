@@ -13,6 +13,18 @@
       <span>{{ settings.porGroupCount }}</span>
       <button @click="increaseGroup('por')">+</button>
     </div>
+    <div class="form-group">
+      <label for="porGroupCount">Leader公式班組數：</label>
+      <button @click="decreaseGroup('leader')" :disabled="settings.leaderGroupCount <= 1">-</button>
+      <span>{{ settings.leaderGroupCount }}</span>
+      <button @click="increaseGroup('leader')">+</button>
+    </div>
+    <div class="form-group">
+      <label for="secretaryGroupCount">秘書公式班組數：</label>
+      <button @click="decreaseGroup('secretary')" :disabled="settings.secretaryGroupCount <= 1">-</button>
+      <span>{{ settings.secretaryGroupCount }}</span>
+      <button @click="increaseGroup('secretary')">+</button>
+    </div>
     <button @click="saveSettings" class="save-button">儲存設置</button>
   </div>
 </template>
@@ -28,13 +40,16 @@ export default {
     const store = useStore()
     const settings = reactive({
       regularGroupCount: store.state.settings.regularGroupCount,
-      porGroupCount: store.state.settings.porGroupCount
+      porGroupCount: store.state.settings.porGroupCount,
+      leaderGroupCount: store.state.settings.leaderGroupCount,
+      secretaryGroupCount: store.state.settings.secretaryGroupCount
     })
 
     onMounted(() => {
-      // 確保從 store 加載最新的設置
       settings.regularGroupCount = store.state.settings.regularGroupCount
       settings.porGroupCount = store.state.settings.porGroupCount
+      settings.leaderGroupCount = store.state.settings.leaderGroupCount
+      settings.secretaryGroupCount = store.state.settings.secretaryGroupCount
     })
 
     const increaseGroup = (type) => {
@@ -42,6 +57,10 @@ export default {
         settings.regularGroupCount++
       } else if (type === 'por') {
         settings.porGroupCount++
+      } else if (type === 'leader') {
+        settings.leaderGroupCount++
+      } else if (type === 'secretary') {
+        settings.secretaryGroupCount++
       }
     }
 
@@ -50,6 +69,10 @@ export default {
         settings.regularGroupCount--
       } else if (type === 'por' && settings.porGroupCount > 1) {
         settings.porGroupCount--
+      } else if (type === 'leader' && settings.leaderGroupCount > 1) {
+        settings.leaderGroupCount--
+      } else if (type === 'secretary' && settings.secretaryGroupCount > 1) {
+        settings.secretaryGroupCount--
       }
     }
 

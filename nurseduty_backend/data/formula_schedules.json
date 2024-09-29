@@ -1,0 +1,417 @@
+[
+  {
+    "type": "regular",
+    "formula_data": [
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": [
+          5
+        ]
+      },
+      {
+        "shifts": [
+          "O",
+          "D",
+          "D",
+          "A",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": [
+          6
+        ]
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "D",
+          "O",
+          "A",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": [
+          8
+        ]
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "A",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "D",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "D",
+          "O",
+          "O",
+          "D",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "D",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      },
+      {
+        "shifts": [
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O",
+          "O"
+        ],
+        "nurses": []
+      }
+    ]
+  },
+  {
+    "type": "por",
+    "formula_data": []
+  },
+  {
+    "type": "leader",
+    "formula_data": [
+      {
+        "shifts": [
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "E",
+          "O"
+        ],
+        "nurses": [
+          2
+        ]
+      },
+      {
+        "shifts": [
+          "A",
+          "A",
+          "A",
+          "A",
+          "A",
+          "O",
+          "O"
+        ],
+        "nurses": [
+          3
+        ]
+      }
+    ]
+  },
+  {
+    "type": "secretary",
+    "formula_data": [
+      {
+        "shifts": [
+          "B",
+          "B",
+          "B",
+          "B",
+          "B",
+          "O",
+          "O"
+        ],
+        "nurses": [
+          40
+        ]
+      }
+    ]
+  }
+]

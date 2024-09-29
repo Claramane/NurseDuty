@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  frontend:
+    build: ./nurseduty_frontend
+    ports:
+      - "8080:80"
+    environment:
+      - VITE_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build: ./nurseduty_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./nurseduty_backend:/app
+    env_file:
+      - ./nurseduty_backend/.env
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

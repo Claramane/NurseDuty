@@ -1,10 +1,10 @@
 <template>
   <div class="staff-management">
     <h2>公式班成員組別調整</h2>
-    <div v-if="isLoaded">
-      <div v-for="nurse in memberNurses" :key="nurse.name" class="nurse-item">
+    <div v-if="!isLoading">
+      <div v-for="nurse in memberNurses" :key="nurse.id" class="nurse-item">
         <span>{{ nurse.name }}</span>
-        <select v-model="nurse.group" @change="updateGroup(nurse.name, nurse.group)">
+        <select v-model="nurse.group" @change="updateGroup(nurse.id, nurse.group)">
           <option value="0">未分組</option>
           <option v-for="n in groupCount" :key="n" :value="n">{{ n }}</option>
         </select>
@@ -13,6 +13,7 @@
     <div v-else>
       載入中...
     </div>
+    <p v-if="error" class="error-message">{{ error }}</p>
   </div>
 </template>
 
@@ -24,23 +25,31 @@ export default {
   name: 'StaffManagement',
   setup() {
     const store = useStore()
-    const isLoaded = ref(false)
+    const isLoading = ref(true)
+    const error = ref(null)
 
     const memberNurses = computed(() => 
-      store.getters['staff/memberNurses'].filter(nurse => nurse.role === 'member')
+      store.getters['staff/nursesByRole']('member')
     )
     const groupCount = computed(() => store.getters['settings/regularGroupCount'])
 
-    const updateGroup = (name, group) => {
-      store.dispatch('staff/updateNurseGroup', { name, group })
+    const updateGroup = async (id, group) => {
+      try {
+        await store.dispatch('staff/updateNurseGroup', { id, group })
+      } catch (err) {
+        console.error('Failed to update nurse group:', err)
+        error.value = '更新護士組別失敗：' + (err.response?.data?.detail || err.message)
+      }
     }
 
     onMounted(async () => {
       try {
-        await store.dispatch('staff/initializeNurses')
-        isLoaded.value = true
-      } catch (error) {
-        console.error('Failed to initialize nurses:', error)
+        await store.dispatch('staff/fetchNurses')
+        isLoading.value = false
+      } catch (err) {
+        console.error('Failed to fetch nurses:', err)
+        error.value = '獲取護士數據失敗：' + (err.response?.data?.detail || err.message)
+        isLoading.value = false
       }
     })
 
@@ -48,7 +57,8 @@ export default {
       memberNurses,
       groupCount,
       updateGroup,
-      isLoaded
+      isLoading,
+      error
     }
   }
 }
@@ -69,5 +79,9 @@ export default {
 }
 select {
   padding: 5px;
+}
+.error-message {
+  color: red;
+  margin-top: 10px;
 }
 </style>

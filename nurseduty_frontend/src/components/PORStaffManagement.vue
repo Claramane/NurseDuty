@@ -1,73 +1,87 @@
 <template>
-    <div class="por-staff-management">
-      <h2>POR 成員組別調整</h2>
-      <div v-if="isLoaded">
-        <div v-for="nurse in porNurses" :key="nurse.name" class="nurse-item">
-          <span>{{ nurse.name }}</span>
-          <select v-model="nurse.group" @change="updateGroup(nurse.name, nurse.group)">
-            <option value="0">未分組</option>
-            <option v-for="n in groupCount" :key="n" :value="n">{{ n }}</option>
-          </select>
-        </div>
-      </div>
-      <div v-else>
-        載入中...
+  <div class="por-staff-management">
+    <h2>POR 成員組別調整</h2>
+    <div v-if="!isLoading">
+      <div v-for="nurse in porNurses" :key="nurse.id" class="nurse-item">
+        <span>{{ nurse.name }}</span>
+        <select v-model="nurse.group" @change="updateGroup(nurse.id, nurse.group)">
+          <option value="0">未分組</option>
+          <option v-for="n in groupCount" :key="n" :value="n">{{ n }}</option>
+        </select>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import { ref, computed, onMounted } from 'vue'
-  import { useStore } from 'vuex'
-  
-  export default {
-    name: 'PORStaffManagement',
-    setup() {
-      const store = useStore()
-      const isLoaded = ref(false)
-  
-      const porNurses = computed(() => 
-        store.getters['staff/allNurses'].filter(nurse => nurse.role === 'POR')
-      )
-      const groupCount = computed(() => store.getters['settings/porGroupCount'])
-  
-      const updateGroup = (name, group) => {
-        store.dispatch('staff/updateNurseGroup', { name, group })
-      }
-  
-      onMounted(async () => {
-        try {
-          await store.dispatch('staff/initializeNurses')
-          isLoaded.value = true
-        } catch (error) {
-          console.error('Failed to initialize nurses:', error)
-        }
-      })
-  
-      return {
-        porNurses,
-        groupCount,
-        updateGroup,
-        isLoaded
+    <div v-else>
+      載入中...
+    </div>
+    <p v-if="error" class="error-message">{{ error }}</p>
+  </div>
+</template>
+
+<script>
+import { ref, computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
+
+export default {
+  name: 'PORStaffManagement',
+  setup() {
+    const store = useStore()
+    const isLoading = ref(true)
+    const error = ref(null)
+
+    const porNurses = computed(() => 
+      store.getters['staff/nursesByRole']('POR')
+    )
+    const groupCount = computed(() => store.getters['settings/porGroupCount'])
+
+    const updateGroup = async (id, group) => {
+      try {
+        await store.dispatch('staff/updateNurseGroup', { id, group })
+      } catch (err) {
+        console.error('Failed to update nurse group:', err)
+        error.value = '更新護士組別失敗：' + (err.response?.data?.detail || err.message)
       }
     }
+
+    onMounted(async () => {
+      try {
+        await store.dispatch('staff/fetchNurses')
+        isLoading.value = false
+      } catch (err) {
+        console.error('Failed to fetch nurses:', err)
+        error.value = '獲取護士數據失敗：' + (err.response?.data?.detail || err.message)
+        isLoading.value = false
+      }
+    })
+
+    return {
+      porNurses,
+      groupCount,
+      updateGroup,
+      isLoading,
+      error
+    }
   }
-  </script>
-  
-  <style scoped>
-  .por-staff-management {
-    padding: 20px;
-  }
-  .nurse-item {
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-  }
-  .nurse-item span {
-    margin-right: 10px;
-    min-width: 100px;
-  }
-  select {
-    padding: 5px;
-  }
-  </style>
+}
+</script>
+
+<style scoped>
+.por-staff-management {
+  padding: 20px;
+}
+.nurse-item {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+.nurse-item span {
+  margin-right: 10px;
+  min-width: 100px;
+}
+select {
+  padding: 5px;
+}
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+</style>

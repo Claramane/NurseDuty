@@ -11,7 +11,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(schedule, index) in schedules" :key="index">
+                <tr v-for="(schedule, index) in currentSchedule.formula_data" :key="index">
                     <td>{{ index + 1 }}</td>
                     <td>{{ getNurseNames(index + 1) }}</td>
                     <td v-for="(shift, dayIndex) in schedule.shifts" :key="dayIndex"
@@ -22,10 +22,11 @@
                 </tr>
             </tbody>
         </table>
-        <button @click="toggleSave" class="save-button">
+        <button @click="toggleSave" class="save-button" :disabled="isLoading">
             {{ isSaved ? '解除儲存' : '儲存' }}
         </button>
-        <button @click="resetSchedule" class="reset-button">清空</button>
+        <button @click="resetSchedule" class="reset-button" :disabled="isLoading">清空</button>
+        <p v-if="error" class="error-message">{{ error }}</p>
     </div>
 </template>
 
@@ -39,23 +40,29 @@ export default {
         const store = useStore()
         const dayNames = ['一', '二', '三', '四', '五', '六', '日']
         const shiftTypes = ['A', 'K', 'C', 'F', 'O']
-        const schedules = ref([])
+        const isLoading = ref(false)
+        const error = ref(null)
         const isSaved = ref(false)
 
-        const groupCount = computed(() => store.getters['settings/porGroupCount'])        
-        const nurses = computed(() => store.state.staff.nurses.filter(nurse => nurse.role === 'POR'))
+        const groupCount = computed(() => store.getters['settings/porGroupCount'])
+        const nurses = computed(() => store.getters['staff/activeNurses'].filter(nurse => nurse.role === 'POR'))
+        const currentSchedule = computed(() => store.getters['schedule/getFormulaSchedule']('por') || { type: 'por', formula_data: [] })
 
         const initializeSchedules = () => {
-            schedules.value = Array(groupCount.value).fill(null).map(() => ({
-                shifts: Array(7).fill('O')
+            const newSchedule = Array(groupCount.value).fill(null).map(() => ({
+                shifts: Array(7).fill('O'),
+                nurses: []
             }))
+            store.dispatch('schedule/updateFormulaSchedule', { type: 'por', formula_data: newSchedule })
         }
-        
+
         const toggleShift = (scheduleIndex, dayIndex) => {
             if (!isSaved.value) {
-                const currentShift = schedules.value[scheduleIndex].shifts[dayIndex]
+                const newSchedule = JSON.parse(JSON.stringify(currentSchedule.value.formula_data))
+                const currentShift = newSchedule[scheduleIndex].shifts[dayIndex]
                 const nextShiftIndex = (shiftTypes.indexOf(currentShift) + 1) % shiftTypes.length
-                schedules.value[scheduleIndex].shifts[dayIndex] = shiftTypes[nextShiftIndex]
+                newSchedule[scheduleIndex].shifts[dayIndex] = shiftTypes[nextShiftIndex]
+                store.dispatch('schedule/updateFormulaSchedule', { type: 'por', formula_data: newSchedule })
             }
         }
 
@@ -64,13 +71,37 @@ export default {
             return shifts.reduce((total, shift) => total + hourMapping[shift], 0)
         }
 
-
         const getDayName = (day) => dayNames[day - 1]
 
-        const toggleSave = () => {
-            isSaved.value = !isSaved.value
-            if (isSaved.value) {
-                store.dispatch('schedule/savePORFormulaSchedules', schedules.value)
+        const toggleSave = async () => {
+            try {
+                isLoading.value = true
+                error.value = null
+
+                if (!isSaved.value) {
+                    const formulaData = currentSchedule.value.formula_data.map((schedule, index) => ({
+                        shifts: schedule.shifts,
+                        nurses: nurses.value
+                            .filter(nurse => nurse.group === index + 1 && nurse.active && nurse.role === 'POR')
+                            .map(nurse => nurse.id)
+                    }))
+
+                    await store.dispatch('schedule/updateFormulaSchedule', {
+                        type: 'por',
+                        formula_data: formulaData
+                    })
+
+                    await store.dispatch('schedule/saveFullSchedule')
+                    isSaved.value = true
+                } else {
+                    isSaved.value = false
+                }
+            } catch (err) {
+                console.error('Error in toggleSave:', err)
+                error.value = '保存失敗：' + (err.response?.data?.detail || err.message)
+                isSaved.value = false
+            } finally {
+                isLoading.value = false
             }
         }
 
@@ -81,41 +112,59 @@ export default {
                 .join(', ')
         }
 
-        const resetSchedule = () => {
+        const resetSchedule = async () => {
             if (confirm('確定要清空所有POR排班嗎？')) {
-                initializeSchedules()
-                isSaved.value = false
+                try {
+                    isLoading.value = true
+                    await store.dispatch('staff/resetGroups')
+                    initializeSchedules()
+                    isSaved.value = false
+                } catch (err) {
+                    console.error('Error in resetSchedule:', err)
+                    error.value = '重置失敗：' + (err.response?.data?.detail || err.message)
+                } finally {
+                    isLoading.value = false
+                }
             }
         }
 
-        onMounted(() => {
-            store.dispatch('schedule/porFormulaSchedules')
-            const savedSchedules = store.getters['schedule/getPORFormulaSchedules']
-            if (savedSchedules && savedSchedules.length > 0) {
-                schedules.value = savedSchedules
-                isSaved.value = true
-            } else {
-                initializeSchedules()
+        onMounted(async () => {
+            try {
+                isLoading.value = true
+                await store.dispatch('staff/fetchNurses')
+                await store.dispatch('schedule/loadFormulaSchedules')
+                if (currentSchedule.value.formula_data.length === 0) {
+                    initializeSchedules()
+                } else {
+                    isSaved.value = true
+                }
+            } catch (err) {
+                console.error('Error loading data:', err)
+                error.value = '載入數據失敗：' + (err.response?.data?.detail || err.message)
+            } finally {
+                isLoading.value = false
             }
         })
 
         watch(groupCount, (newCount, oldCount) => {
             if (oldCount && newCount !== oldCount) {
-                const currentCount = schedules.value.length
-                if (newCount > currentCount) {
-                    const newGroups = Array(newCount - currentCount).fill().map(() => ({
-                        shifts: Array(7).fill('O')
+                const newSchedule = [...currentSchedule.value.formula_data]
+                if (newCount > oldCount) {
+                    const additionalGroups = Array(newCount - oldCount).fill().map(() => ({
+                        shifts: Array(7).fill('O'),
+                        nurses: []
                     }))
-                    schedules.value = [...schedules.value, ...newGroups]
-                } else if (newCount < currentCount) {
-                    schedules.value = schedules.value.slice(0, newCount)
+                    newSchedule.push(...additionalGroups)
+                } else if (newCount < oldCount) {
+                    newSchedule.splice(newCount)
                 }
+                store.dispatch('schedule/updateFormulaSchedule', { type: 'por', formula_data: newSchedule })
                 isSaved.value = false
             }
         })
 
         return {
-            schedules,
+            currentSchedule,
             toggleShift,
             calculateWorkHours,
             getDayName,
@@ -123,7 +172,9 @@ export default {
             toggleSave,
             getNurseNames,
             groupCount,
-            resetSchedule
+            resetSchedule,
+            isLoading,
+            error
         }
     }
 }

@@ -1,16 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
 import FormulaSchedule from '../views/FormulaSchedule.vue'
 import POR_Formula from '@/views/POR_Formula.vue'
+import leader_Formula from '@/views/Leader_Formula.vue'
+import Secreatary_Formula from '@/views/Secretary_Formula.vue'
 import MonthlySchedule from '../views/MonthlySchedule.vue'
-import MonthlyScheduleResults from '../views/MonthlyScheduleResults.vue'
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
   {
     path: '/formula-schedule',
     name: 'FormulaSchedule',
@@ -22,19 +17,24 @@ const routes = [
     component: POR_Formula
   },
   {
+    path: '/leader-formula',
+    name: 'leader_Formula',
+    component: leader_Formula
+  },
+  {
+    path: '/secretary-formula',
+    name: 'Secretary_Formula',
+    component: Secreatary_Formula
+  },
+  {
     path: '/monthly-schedule',
     name: 'MonthlySchedule',
     component: MonthlySchedule
   },
-  {
-    path: '/monthly-schedule-results',
-    name: 'MonthlyScheduleResults',
-    component: MonthlyScheduleResults
-  }
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes
 })
 
