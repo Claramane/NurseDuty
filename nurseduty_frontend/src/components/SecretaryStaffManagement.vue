@@ -1,6 +1,10 @@
 <template>
   <div class="secretary-staff-management">
     <h2>秘書 成員組別調整</h2>
+    <div class="group-control">
+      <button @click="adjustAllGroups(-1)" :disabled="isLoading">-</button>
+      <button @click="adjustAllGroups(1)" :disabled="isLoading">+</button>
+    </div>
     <div v-if="!isLoading">
       <div v-for="nurse in secretaryNurses" :key="nurse.id" class="nurse-item">
         <span>{{ nurse.name }}</span>
@@ -42,6 +46,41 @@ export default {
       }
     }
 
+
+    const adjustAllGroups = async (adjustment) => {
+      try {
+        isLoading.value = true
+        const updatedNurses = secretaryNurses.value.map(nurse => {
+          if (nurse.group === 0) {
+            return nurse
+          }
+          let newGroup = nurse.group + adjustment
+          if (newGroup > groupCount.value) {
+            newGroup = 1
+          } else if (newGroup < 1) {
+            newGroup = groupCount.value
+          }
+          return { ...nurse, group: newGroup }
+        })
+
+        for (const nurse of updatedNurses) {
+          if (nurse.group !== 0) {
+            await store.dispatch('staff/updateNurseGroup', {
+              id: nurse.id,
+              group: nurse.group
+            })
+          }
+        }
+
+        await store.dispatch('staff/fetchNurses')
+      } catch (err) {
+        console.error('Failed to adjust groups:', err)
+        error.value = '調整組別失敗：' + (err.response?.data?.detail || err.message)
+      } finally {
+        isLoading.value = false
+      }
+    }
+
     onMounted(async () => {
       try {
         await store.dispatch('staff/fetchNurses')
@@ -57,6 +96,7 @@ export default {
       secretaryNurses,
       groupCount,
       updateGroup,
+      adjustAllGroups,
       isLoading,
       error
     }
@@ -65,8 +105,17 @@ export default {
 </script>
 
 <style scoped>
-.secretary-staff-management {
+.staff-management {
   padding: 20px;
+}
+.group-control {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 10px;
+}
+.group-control button {
+  padding: 5px 10px;
+  font-size: 16px;
 }
 .nurse-item {
   margin-bottom: 10px;

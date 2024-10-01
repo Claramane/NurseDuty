@@ -1,11 +1,14 @@
+const webpack = require('webpack');
+
 module.exports = {
-  chainWebpack: config => {
-    config.plugin('define').tap(args => {
-      const env = args[0]['process.env']
-      for (let key in env) {
-        env[key] = JSON.stringify(env[key])
-      }
-      return args
-    })
-  }
-}
+  configureWebpack: {
+    plugins: [
+      new webpack.DefinePlugin({
+        'process.env': {
+          VUE_APP_API_URL: JSON.stringify(process.env.VUE_APP_API_URL)
+        }
+      })
+    ]
+  },
+  outputDir: 'dist',
+};

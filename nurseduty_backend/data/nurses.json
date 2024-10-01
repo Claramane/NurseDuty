@@ -32,28 +32,28 @@
     {
       "id": 5,
       "name": "\u8521\u79c0\u91d1",
-      "group": 1,
+      "group": 2,
       "role": "member",
       "active": true
     },
     {
       "id": 6,
       "name": "\u5f35\u6148\u73ee",
-      "group": 2,
+      "group": 3,
       "role": "member",
       "active": true
     },
     {
       "id": 7,
       "name": "\u8a31\u8212\u60e0",
-      "group": 0,
+      "group": 4,
       "role": "member",
       "active": true
     },
     {
       "id": 8,
       "name": "\u4f55\u7469\u6167",
-      "group": 4,
+      "group": 5,
       "role": "member",
       "active": true
     },

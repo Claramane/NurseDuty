@@ -1,8 +1,7 @@
 import axios from "axios";
 
-const API_URL = process.env.VUE_APP_API_URL
-  ? process.env.VUE_APP_API_URL.replace(/"/g, "")
-  : "http://localhost:8000";
+// const API_URL = 'http://192.168.75.159:8000'
+const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
   namespaced: true,
@@ -12,7 +11,7 @@ export default {
       { type: "por", formula_data: [] },
       { type: "leader", formula_data: [] },
       { type: "secretary", formula_data: [] }
-    ],
+    ],  
     error: null,
   },
   mutations: {

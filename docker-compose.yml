@@ -1,28 +1,33 @@
 version: '3'
 
+networks:
+  app-network:
+    driver: bridge
+
+    
 services:
   frontend:
-    build: ./nurseduty_frontend
+    build:
+      context: ./nurseduty_frontend
+      dockerfile: Dockerfile
+      args:
+        - VUE_APP_API_URL=${VUE_APP_API_URL}
     ports:
-      - "8080:80"
+      - "6200:80" 
     environment:
-      - VITE_API_URL=http://backend:8000
+      - VUE_APP_API_URL=${VUE_APP_API_URL}
     depends_on:
       - backend
     networks:
       - app-network
 
   backend:
-    build: ./nurseduty_backend
-    ports:
-      - "8000:8000"
+    build:
+      context: ./nurseduty_backend
+      dockerfile: Dockerfile
     volumes:
-      - ./nurseduty_backend:/app
-    env_file:
-      - ./nurseduty_backend/.env
+      - ./nurseduty_backend/data:/app/data
     networks:
       - app-network
-
-networks:
-  app-network:
-    driver: bridge
+    ports:
+      - "8000:8000"

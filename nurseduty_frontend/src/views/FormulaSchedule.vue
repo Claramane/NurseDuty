@@ -11,7 +11,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(schedule, index) in currentSchedule.formula_data" :key="index">
+                <tr v-for="(schedule, index) in computedSchedule" :key="index">
                     <td>{{ index + 1 }}</td>
                     <td>{{ getNurseNames(index + 1) }}</td>
                     <td v-for="(shift, dayIndex) in schedule.shifts" :key="dayIndex"
@@ -73,6 +73,22 @@ export default {
 
         const getDayName = (day) => dayNames[day - 1]
 
+        const computedSchedule = computed(() => {
+            const count = groupCount.value || 0;
+            const baseSchedule = currentSchedule.value.formula_data || [];
+            const newSchedule = [...baseSchedule];
+
+            // 調整數組長度以匹配 groupCount
+            while (newSchedule.length < count) {
+                newSchedule.push({ shifts: Array(7).fill('O'), nurses: [] });
+            }
+            if (newSchedule.length > count) {
+                newSchedule.length = count;
+            }
+
+            return newSchedule;
+        });
+
         const toggleSave = async () => {
             try {
                 isLoading.value = true
@@ -86,6 +102,7 @@ export default {
                             .map(nurse => nurse.id)
                     }))
 
+                    console.log('Sending data to backend:', JSON.stringify(formulaData, null, 2));
                     await store.dispatch('schedule/updateFormulaSchedule', {
                         type: 'regular',
                         formula_data: formulaData
@@ -148,22 +165,16 @@ export default {
 
         watch(groupCount, (newCount, oldCount) => {
             if (oldCount && newCount !== oldCount) {
-                const newSchedule = [...currentSchedule.value.formula_data]
-                if (newCount > oldCount) {
-                    const additionalGroups = Array(newCount - oldCount).fill().map(() => ({
-                        shifts: Array(7).fill('O'),
-                        nurses: []
-                    }))
-                    newSchedule.push(...additionalGroups)
-                } else if (newCount < oldCount) {
-                    newSchedule.splice(newCount)
-                }
-                store.dispatch('schedule/updateFormulaSchedule', { type: 'regular', formula_data: newSchedule })
-                isSaved.value = false
+                store.dispatch('schedule/updateFormulaSchedule', {
+                    type: 'regular',
+                    formula_data: computedSchedule.value
+                });
+                isSaved.value = false;
             }
-        })
+        });
 
         return {
+            computedSchedule,
             currentSchedule,
             toggleShift,
             calculateWorkHours,

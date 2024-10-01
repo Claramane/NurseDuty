@@ -64,8 +64,7 @@ export default {
     const isDataReady = ref(false)
 
     const API_URL = process.env.VUE_APP_API_URL
-      ? process.env.VUE_APP_API_URL.replace(/"/g, "")
-      : "http://localhost:8000";
+    // const API_URL = 'http://192.168.75.159:8000'
 
     const dayNames = ['日', '一', '二', '三', '四', '五', '六']
     const daysInMonth = computed(() => new Date(selectedDate.value.getFullYear(), selectedDate.value.getMonth() + 1, 0).getDate())
@@ -93,7 +92,7 @@ export default {
         const allNurses = store.getters['staff/activeNurses']
 
         if (!formulaSchedules || !porFormulaSchedules || !leaderFormulaSchedules || !secretaryFormulaSchedules || !allNurses) {
-          throw new Error('缺少公式班表或護士數據')
+          throw new Error('缺少公式班表或麻護數據')
         }
 
         const year = selectedDate.value.getFullYear()

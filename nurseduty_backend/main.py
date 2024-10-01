@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import json
 from typing import List, Dict, Any, Optional
 import os
@@ -28,7 +28,7 @@ class FormulaSchedule(BaseModel):
     formula_data: List[Dict[str, Any]]
 
 class AllFormulaSchedules(BaseModel):
-    __root__: List[FormulaSchedule]
+    schedules: List[FormulaSchedule]
 
 class Settings(BaseModel):
     regularGroupCount: int
@@ -50,19 +50,24 @@ class MonthlySchedule(BaseModel):
     schedule: List[MonthlyScheduleItem]
 
 
-
+def get_data_path(filename: str) -> str:
+    """Returns the absolute path to the data file."""
+    return os.path.join(os.path.dirname(__file__), 'data', filename)
 
 def load_nurses():
-    with open('data/nurses.json', 'r') as f:
+    file_path = get_data_path('nurses.json')
+    with open(file_path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
 def save_nurses(nurses):
-    with open('data/nurses.json', 'w') as f:
+    file_path = get_data_path('nurses.json')
+    with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(nurses, f, indent=2)
 
 def ensure_data_directory():
-    if not os.path.exists('data'):
-        os.makedirs('data')
+    data_dir = os.path.join(os.path.dirname(__file__), 'data')
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
 
 def load_json(file_path):
     ensure_data_directory()
@@ -102,49 +107,42 @@ async def reset_nurse_groups():
     save_nurses(nurses_data)
     return {"message": "All nurse groups reset to 0"}
 
-# @app.get("/api/formula/{formula_type}")
-# async def get_formula_schedule(formula_type: str):
-#     formulas = load_json('data/formula_schedules.json')
-#     for formula in formulas:
-#         if isinstance(formula, dict) and formula.get("type") == formula_type:
-#             return formula
-#     return {"type": formula_type, "formula_data": []}
-
 @app.post("/api/formula")
-async def save_all_formula_schedules(schedules: AllFormulaSchedules):
-    logger.info(f"Received schedules: {schedules}")
-    formulas = schedules.__root__
-    save_json('data/formula_schedules.json', [formula.dict() for formula in formulas])
-    logger.info("Schedules saved successfully")
-    return {"message": "All formula schedules saved successfully"}
+async def save_all_formula_schedules(schedules: List[FormulaSchedule]):
+    try:
+        save_json(get_data_path('formula_schedules.json'), [formula.dict() for formula in schedules])
+        logger.info("Schedules saved successfully")
+        return {"message": "All formula schedules saved successfully"}
+    except Exception as e:
+        logger.error(f"Error saving schedules: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error saving schedules: {str(e)}")
 
 @app.get("/api/formula")
 async def get_all_formula_schedules():
-    return load_json('data/formula_schedules.json')
+    return load_json(get_data_path('formula_schedules.json'))
 
 @app.post("/api/settings")
 async def save_settings(settings: Settings):
-    save_json('data/settings.json', settings.dict())
+    save_json(get_data_path('settings.json'), settings.dict())
     return {"message": "Settings saved successfully"}
 
 @app.get("/api/settings")
 async def get_settings():
-    settings = load_json('data/settings.json')
+    settings = load_json(get_data_path('settings.json'))
     if settings:
         return settings
     raise HTTPException(status_code=404, detail="Settings not found")
 
-
 @app.post("/api/monthly-schedule")
 async def save_monthly_schedule(schedule: MonthlySchedule):
-    file_path = 'data/monthly_schedule.json'
+    file_path = get_data_path('monthly_schedule.json')
     
     # Ensure data directory exists
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    ensure_data_directory()
     
     # Read existing data (if file exists)
     if os.path.exists(file_path):
-        with open(file_path, 'r') as f:
+        with open(file_path, 'r', encoding='utf-8') as f:
             existing_data = json.load(f)
     else:
         existing_data = {}
@@ -156,19 +154,19 @@ async def save_monthly_schedule(schedule: MonthlySchedule):
     existing_data[year_key][str(schedule.month)] = schedule.dict()
     
     # Save updated data
-    with open(file_path, 'w') as f:
+    with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(existing_data, f, indent=2, ensure_ascii=False)
     
     return {"message": "Monthly schedule saved successfully"}
 
 @app.get("/api/monthly-schedule/{year}/{month}")
 async def get_monthly_schedule(year: int, month: int):
-    file_path = 'data/monthly_schedule.json'
+    file_path = get_data_path('monthly_schedule.json')
     
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="No monthly schedules found")
     
-    with open(file_path, 'r') as f:
+    with open(file_path, 'r', encoding='utf-8') as f:
         all_schedules = json.load(f)
     
     year_str = str(year)
@@ -179,25 +177,24 @@ async def get_monthly_schedule(year: int, month: int):
     else:
         raise HTTPException(status_code=404, detail="Schedule for specified month not found")
 
-
-
 def initialize_data_files():
     ensure_data_directory()
     files_to_initialize = [
-        'data/formula_schedules.json',
-        'data/settings.json'
+        'formula_schedules.json',
+        'settings.json'
     ]
     for file in files_to_initialize:
-        if not os.path.exists(file):
-            if file == 'data/formula_schedules.json':
-                save_json(file, [
+        file_path = get_data_path(file)
+        if not os.path.exists(file_path):
+            if file == 'formula_schedules.json':
+                save_json(file_path, [
                     {"type": "regular", "formula_data": []},
                     {"type": "por", "formula_data": []},
                     {"type": "leader", "formula_data": []},
                     {"type": "secretary", "formula_data": []}
                 ])
             else:
-                save_json(file, {})
+                save_json(file_path, {})
 
 @app.on_event("startup")
 async def startup_event():

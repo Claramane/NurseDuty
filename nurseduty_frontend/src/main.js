@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import '@fortawesome/fontawesome-free/css/all.css'
 
+
 const app = createApp(App)
 
 app.use(router)
