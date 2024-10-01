@@ -4,7 +4,6 @@ networks:
   app-network:
     driver: bridge
 
-
 services:
   frontend:
     build:
@@ -13,7 +12,7 @@ services:
       args:
         - VUE_APP_API_URL=${VUE_APP_API_URL}
     ports:
-      - "8787:87" 
+      - "6200:80"  
     environment:
       - VUE_APP_API_URL=${VUE_APP_API_URL}
     depends_on:
@@ -30,4 +29,4 @@ services:
     networks:
       - app-network
     ports:
-      - "6200:6200"
+      - "8787:6200"
