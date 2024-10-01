@@ -13,7 +13,7 @@ services:
       args:
         - VUE_APP_API_URL=${VUE_APP_API_URL}
     ports:
-      - "6200:80" 
+      - "8787:6200" 
     environment:
       - VUE_APP_API_URL=${VUE_APP_API_URL}
     depends_on:
