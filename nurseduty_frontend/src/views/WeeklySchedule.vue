@@ -45,7 +45,7 @@
     <!-- 隱藏的完整內容，用於 PDF 生成 -->
     <div id="pdf-content" style="display: none;">
       <div v-for="(week, weekIndex) in weeklySchedule" :key="weekIndex" class="week-container">
-        <h2>麻醉科護理人員值班週表</h2>
+        <h2 class="week-title">麻醉科護理人員值班週表</h2>
         <div class="year-month">{{ formattedDate }}</div>
         <table>
           <thead>
@@ -201,6 +201,15 @@ export default {
       });
       pdfContent.querySelectorAll('th, td').forEach(cell => {
         cell.style.width = 'auto';  // 重置寬度，讓單元格自動調整
+      });
+
+
+      pdfContent.querySelectorAll('.week-container h2').forEach(title => {
+        title.style.textAlign = 'center';
+        title.style.width = '100%';
+        title.style.position = 'relative';
+        title.style.left = '0';
+        title.style.right = '0';
       });
 
       const pdf = new jsPDF('l', 'mm', 'a4');
