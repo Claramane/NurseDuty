@@ -4,6 +4,7 @@ import POR_Formula from '@/views/POR_Formula.vue'
 import leader_Formula from '@/views/Leader_Formula.vue'
 import Secreatary_Formula from '@/views/Secretary_Formula.vue'
 import MonthlySchedule from '../views/MonthlySchedule.vue'
+import WeeklySchedule from '../views/WeeklySchedule.vue'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/monthly-schedule',
     name: 'MonthlySchedule',
     component: MonthlySchedule
+  },
+  {
+    path: '/weekly-schedule',
+    name: 'WeeklySchedule',
+    component: WeeklySchedule
   },
 ]
 

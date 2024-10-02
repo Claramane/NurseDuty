@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// const API_URL = 'http://192.168.75.159:8000'
 const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
@@ -11,8 +10,11 @@ export default {
       { type: "por", formula_data: [] },
       { type: "leader", formula_data: [] },
       { type: "secretary", formula_data: [] }
-    ],  
+    ],
+    monthlySchedule: [],
+    selectedDate: new Date(),
     error: null,
+    isLoading: false,
   },
   mutations: {
     setFormulaSchedules(state, schedules) {
@@ -32,6 +34,18 @@ export default {
     },
     setError(state, error) {
       state.error = error;
+    },
+    setMonthlySchedule(state, schedule) {
+      state.monthlySchedule = schedule;
+    },
+    setSelectedDate(state, date) {
+      state.selectedDate = date;
+    },
+    setIsLoading(state, isLoading) {
+      state.isLoading = isLoading;
+    },
+    updateShift(state, { nurseIndex, dayIndex, newShift }) {
+      state.monthlySchedule[nurseIndex].shifts[dayIndex] = newShift;
     },
   },
   actions: {
@@ -74,6 +88,55 @@ export default {
     updateFormulaSchedule({ commit }, { type, formula_data }) {
       commit("updateFormulaSchedule", { type, formula_data });
     },
+
+    async fetchMonthlySchedule({ commit, state }) {
+      commit('setIsLoading', true);
+      commit('setError', null);
+      try {
+        const year = state.selectedDate.getFullYear();
+        const month = state.selectedDate.getMonth() + 1;
+        const response = await axios.get(`${API_URL}/api/monthly-schedule/${year}/${month}`);
+        commit('setMonthlySchedule', response.data.schedule);
+      } catch (error) {
+        console.error('Error fetching monthly schedule:', error);
+        commit('setError', 'Failed to load monthly schedule. Please try again.');
+      } finally {
+        commit('setIsLoading', false);
+      }
+    },
+
+    updateSelectedDate({ commit }, date) {
+      commit('setSelectedDate', date);
+    },
+
+    updateShift({ commit }, payload) {
+      commit('updateShift', payload);
+    },
+
+    async saveMonthlySchedule({ state, commit }) {
+      commit('setIsLoading', true);
+      commit('setError', null);
+      try {
+        const year = state.selectedDate.getFullYear();
+        const month = state.selectedDate.getMonth() + 1;
+        const scheduleData = {
+          year,
+          month,
+          schedule: state.monthlySchedule
+        };
+        const response = await axios.post(`${API_URL}/api/monthly-schedule`, scheduleData);
+        if (response.status === 200) {
+          console.log('Monthly schedule successfully saved');
+        } else {
+          throw new Error('Failed to save monthly schedule');
+        }
+      } catch (error) {
+        console.error('Error saving monthly schedule:', error);
+        commit('setError', 'Failed to save monthly schedule. Please try again.');
+      } finally {
+        commit('setIsLoading', false);
+      }
+    },
   },
   getters: {
     getFormulaSchedule: (state) => (type) => {
@@ -81,5 +144,8 @@ export default {
     },
     allFormulaSchedules: (state) => state.formulaSchedules,
     error: (state) => state.error,
+    getMonthlySchedule: (state) => state.monthlySchedule,
+    getSelectedDate: (state) => state.selectedDate,
+    getIsLoading: (state) => state.isLoading,
   },
 };

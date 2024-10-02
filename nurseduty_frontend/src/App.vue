@@ -13,6 +13,7 @@
         <router-link to="/leader-formula">大姊姊公式班表調整</router-link>
         <router-link to="/secretary-formula">秘書公式班表調整</router-link>
         <router-link to="/monthly-schedule">月班表生成區</router-link>
+        <router-link to="/weekly-schedule">週班表顯示</router-link>
       </nav>
       <StaffManagement v-if="$route.path === '/formula-schedule'" />
       <PORStaffManagement v-if="$route.path === '/por-formula'" />
