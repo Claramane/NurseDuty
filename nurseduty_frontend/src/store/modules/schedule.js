@@ -113,26 +113,110 @@ export default {
       commit('updateShift', payload);
     },
 
+    async generateMonthlySchedule({ commit, getters, rootGetters, state }) {
+      commit('setIsLoading', true);
+      commit('setError', null);
+      try {
+        const formulaSchedules = getters.getFormulaSchedule('regular');
+        const porFormulaSchedules = getters.getFormulaSchedule('por');
+        const leaderFormulaSchedules = getters.getFormulaSchedule('leader');
+        const secretaryFormulaSchedules = getters.getFormulaSchedule('secretary');
+        const allNurses = rootGetters['staff/activeNurses'];
+
+        if (!formulaSchedules || !porFormulaSchedules || !leaderFormulaSchedules || !secretaryFormulaSchedules || !allNurses) {
+          throw new Error('缺少公式班表或護士數據');
+        }
+
+        const year = state.selectedDate.getFullYear();
+        const month = state.selectedDate.getMonth();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const firstDayOfMonth = new Date(year, month, 1).getDay();
+        const formulaStartDay = (firstDayOfMonth + 6) % 7;
+
+        const generatedSchedule = allNurses.map(nurse => {
+          const shifts = [];
+          let nurseFormulas;
+          let formulaGroupCount;
+
+          switch (nurse.role) {
+            case 'POR':
+              nurseFormulas = porFormulaSchedules.formula_data;
+              formulaGroupCount = porFormulaSchedules.formula_data.length;
+              break;
+            case 'leader':
+              nurseFormulas = leaderFormulaSchedules.formula_data;
+              formulaGroupCount = leaderFormulaSchedules.formula_data.length;
+              break;
+            case 'secretary':
+              nurseFormulas = secretaryFormulaSchedules.formula_data;
+              formulaGroupCount = secretaryFormulaSchedules.formula_data.length;
+              break;
+            default:
+              nurseFormulas = formulaSchedules.formula_data;
+              formulaGroupCount = formulaSchedules.formula_data.length;
+          }
+
+          let currentFormulaGroup = nurse.group - 1;
+          if (currentFormulaGroup < 0) currentFormulaGroup = 0;
+
+          for (let i = 0; i < daysInMonth; i++) {
+            let shift = 'O';
+            const dayInFormula = (formulaStartDay + i) % 7;
+
+            if (nurse.role === 'boss') {
+              const dayOfWeek = (firstDayOfMonth + i) % 7;
+              shift = (dayOfWeek >= 1 && dayOfWeek <= 5) ? 'A' : 'O';
+            } else if (nurse.group !== 0) {
+              if (dayInFormula === 0 && i !== 0) {
+                currentFormulaGroup = (currentFormulaGroup + 1) % formulaGroupCount;
+              }
+
+              const formula = nurseFormulas[currentFormulaGroup];
+              if (formula && formula.shifts) {
+                shift = formula.shifts[dayInFormula] || 'O';
+              }
+            }
+            shifts.push(shift);
+          }
+
+          return {
+            name: nurse.name,
+            role: nurse.role,
+            group: nurse.group,
+            shifts
+          };
+        });
+
+        commit('setMonthlySchedule', generatedSchedule);
+      } catch (e) {
+        console.error('生成月班表時發生錯誤:', e);
+        commit('setError', e.message || '生成月班表時發生錯誤');
+      } finally {
+        commit('setIsLoading', false);
+      }
+    },
+
     async saveMonthlySchedule({ state, commit }) {
       commit('setIsLoading', true);
       commit('setError', null);
       try {
-        const year = state.selectedDate.getFullYear();
-        const month = state.selectedDate.getMonth() + 1;
         const scheduleData = {
-          year,
-          month,
+          year: state.selectedDate.getFullYear(),
+          month: state.selectedDate.getMonth() + 1,
           schedule: state.monthlySchedule
         };
+
         const response = await axios.post(`${API_URL}/api/monthly-schedule`, scheduleData);
+
         if (response.status === 200) {
-          console.log('Monthly schedule successfully saved');
+          console.log('班表成功保存到伺服器');
+          commit('setError', '班表已成功保存');
         } else {
-          throw new Error('Failed to save monthly schedule');
+          throw new Error('保存失敗');
         }
-      } catch (error) {
-        console.error('Error saving monthly schedule:', error);
-        commit('setError', 'Failed to save monthly schedule. Please try again.');
+      } catch (err) {
+        console.error('保存班表時發生錯誤:', err);
+        commit('setError', '保存班表失敗，請稍後再試');
       } finally {
         commit('setIsLoading', false);
       }
