@@ -77,19 +77,153 @@ export default {
 
     const generateMonthlySchedule = async () => {
       if (!isDataReady.value) {
-        store.commit('schedule/setError', '數據尚未準備就緒，請稍後再試。')
+        error.value = '數據尚未準備就緒，請稍後再試。'
         return
       }
 
-      await store.dispatch('schedule/generateMonthlySchedule')
+      isLoading.value = true
+      error.value = ''
+
+      try {
+        const formulaSchedules = store.getters['schedule/getFormulaSchedule']('regular')
+        const porFormulaSchedules = store.getters['schedule/getFormulaSchedule']('por')
+        const leaderFormulaSchedules = store.getters['schedule/getFormulaSchedule']('leader')
+        const secretaryFormulaSchedules = store.getters['schedule/getFormulaSchedule']('secretary')
+        const allNurses = store.getters['staff/activeNurses']
+
+        if (!formulaSchedules || !porFormulaSchedules || !leaderFormulaSchedules || !secretaryFormulaSchedules || !allNurses) {
+          throw new Error('缺少公式班表或護士數據')
+        }
+
+        const year = selectedDate.value.getFullYear()
+        const month = selectedDate.value.getMonth()
+        const daysInMonth = new Date(year, month + 1, 0).getDate()
+        const firstDayOfMonth = new Date(year, month, 1).getDay()
+        const formulaStartDay = (firstDayOfMonth + 6) % 7
+
+        monthlySchedule.value = allNurses.map(nurse => {
+          const shifts = []
+          let nurseFormulas
+          let formulaGroupCount
+
+          switch (nurse.role) {
+            case 'POR':
+              nurseFormulas = porFormulaSchedules.formula_data
+              formulaGroupCount = porFormulaSchedules.formula_data.length
+              break
+            case 'leader':
+              nurseFormulas = leaderFormulaSchedules.formula_data
+              formulaGroupCount = leaderFormulaSchedules.formula_data.length
+              break
+            case 'secretary':
+              nurseFormulas = secretaryFormulaSchedules.formula_data
+              formulaGroupCount = secretaryFormulaSchedules.formula_data.length
+              break
+            default:
+              nurseFormulas = formulaSchedules.formula_data
+              formulaGroupCount = formulaSchedules.formula_data.length
+          }
+
+          let currentFormulaGroup = nurse.group - 1
+          if (currentFormulaGroup < 0) currentFormulaGroup = 0
+
+          for (let i = 0; i < daysInMonth; i++) {
+            let shift = 'O'
+            const dayInFormula = (formulaStartDay + i) % 7
+
+            if (nurse.role === 'boss') {
+              const dayOfWeek = (firstDayOfMonth + i) % 7
+              shift = (dayOfWeek >= 1 && dayOfWeek <= 5) ? 'A' : 'O'
+            } else if (nurse.group !== 0) {
+              if (dayInFormula === 0 && i !== 0) {
+                // 當新的一週開始時，移動到下一個公式組
+                currentFormulaGroup = (currentFormulaGroup + 1) % formulaGroupCount
+              }
+
+              const formula = nurseFormulas[currentFormulaGroup]
+              if (formula && formula.shifts) {
+                shift = formula.shifts[dayInFormula] || 'O'
+              }
+            }
+            shifts.push(shift)
+          }
+
+          return {
+            name: nurse.name,
+            role: nurse.role,
+            group: nurse.group,
+            shifts
+          }
+        })
+
+      } catch (e) {
+        console.error('生成月班表時發生錯誤:', e)
+        error.value = e.message || '生成月班表時發生錯誤'
+      } finally {
+        isLoading.value = false
+      }
     }
 
-    const saveMonthlySchedule = () => {
-      store.dispatch('schedule/saveMonthlySchedule')
+
+    const saveMonthlySchedule = async () => {
+      if (monthlySchedule.value.length === 0) {
+        error.value = '沒有可提交的班表數據'
+        return
+      }
+
+      isLoading.value = true
+      error.value = ''
+
+      try {
+        const scheduleData = {
+          year: selectedDate.value.getFullYear(),
+          month: selectedDate.value.getMonth() + 1,
+          schedule: monthlySchedule.value
+        }
+
+        const response = await axios.post(`${API_URL}/api/monthly-schedule`, scheduleData)
+
+        if (response.status === 200) {
+          console.log('班表成功保存到伺服器')
+          error.value = '班表已成功保存'
+        } else {
+          throw new Error('保存失敗')
+        }
+      } catch (err) {
+        console.error('保存班表時發生錯誤:', err)
+        error.value = '保存班表失敗，請稍後再試'
+      } finally {
+        isLoading.value = false
+      }
     }
 
-    const loadSavedSchedule = () => {
-      store.dispatch('schedule/fetchMonthlySchedule')
+    const loadSavedSchedule = async () => {
+      isLoading.value = true
+      error.value = ''
+
+      try {
+        const year = selectedDate.value.getFullYear()
+        const month = selectedDate.value.getMonth() + 1
+        const response = await axios.get(`${API_URL}/api/monthly-schedule/${year}/${month}`)
+
+        if (response.status === 200 && response.data) {
+          monthlySchedule.value = response.data.schedule
+          error.value = ''
+        } else {
+          monthlySchedule.value = []
+          error.value = '該月份暫無班表'
+        }
+      } catch (e) {
+        console.error('從數據庫加載班表時發生錯誤:', e)
+        if (e.response && e.response.status === 404) {
+          error.value = '該月份暫無班表'
+          monthlySchedule.value = []
+        } else {
+          error.value = '加載班表失敗，請稍後再試'
+        }
+      } finally {
+        isLoading.value = false
+      }
     }
 
     const toggleShift = (nurseIndex, shiftIndex) => {
