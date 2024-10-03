@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import json
@@ -11,6 +11,17 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+ALLOWED_IPS = ['10.1.5.111', '10.1.5.24']
+
+# 創建一個中間件來檢查 IP 地址
+@app.middleware("http")
+async def ip_restriction_middleware(request: Request, call_next):
+    client_ip = request.client.host
+    if client_ip not in ALLOWED_IPS:
+        raise HTTPException(status_code=403, detail="Access denied")
+    response = await call_next(request)
+    return response
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,6 +29,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 class NurseUpdate(BaseModel):
     group: int
