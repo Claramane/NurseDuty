@@ -39,7 +39,7 @@ export default {
     setup() {
         const store = useStore()
         const dayNames = ['一', '二', '三', '四', '五', '六', '日']
-        const shiftTypes = ['B', 'O']
+        const shiftTypes = ['B', 'E', 'O']
         const isLoading = ref(false)
         const error = ref(null)
         const isSaved = ref(false)
