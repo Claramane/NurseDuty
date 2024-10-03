@@ -13,7 +13,15 @@ app = FastAPI()
 
 ALLOWED_IPS = ['10.1.5.111', '10.1.5.24']
 
-# 創建一個中間件來檢查 IP 地址
+# 定義允許的源（origins）
+ALLOWED_ORIGINS = [
+    "http://10.1.5.111",
+    "http://10.1.5.24",
+    "https://10.1.5.111",
+    "https://10.1.5.24"
+]
+
+# IP 限制中間件
 @app.middleware("http")
 async def ip_restriction_middleware(request: Request, call_next):
     client_ip = request.client.host
@@ -22,9 +30,10 @@ async def ip_restriction_middleware(request: Request, call_next):
     response = await call_next(request)
     return response
 
+# 配置 CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
