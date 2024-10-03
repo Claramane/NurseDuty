@@ -67,7 +67,7 @@ export default {
         }
 
         const calculateWorkHours = (shifts) => {
-            const hourMapping = { 'B': 8, 'O': 0 }
+            const hourMapping = { 'B': 8, 'E': 4, 'O': 0 }
             return shifts.reduce((total, shift) => total + hourMapping[shift], 0)
         }
 
@@ -230,6 +230,11 @@ td[data-shift="B"] {
 
 td[data-shift="O"] {
     background-color: #eddcd7;
+    color: black;
+}
+
+td[data-shift="E"] {
+    background-color: #8AA6C1;
     color: black;
 }
 
