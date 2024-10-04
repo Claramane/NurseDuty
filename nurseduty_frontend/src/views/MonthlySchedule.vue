@@ -140,38 +140,38 @@ export default {
       const month = selectedDate.value.getMonth() + 1;
       titleElement.innerText = `恩主公麻醉科護理人員${year}年${month}月班表`;
 
-      // 調整表格字體大小以適應單頁
       const table = element.querySelector('table');
       const originalFontSize = window.getComputedStyle(table).fontSize;
-      table.style.fontSize = '8px'; // 可以根據需要調整這個值
+      table.style.fontSize = '8px';
 
       const opt = {
         margin: 5,
         filename: `${formattedDate.value}班表.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
+        image: { type: 'jpeg', quality: 1 },
         html2canvas: { 
-          scale: 1,
+          scale: 4,
           useCORS: true,
           logging: true,
+          dpi: 300,
+          letterRendering: true
         },
         jsPDF: { 
           unit: 'mm', 
           format: 'a4', 
-          orientation: 'portrait'
+          orientation: 'portrait',
+          compress: false
         }
       };
 
       html2pdf().set(opt).from(element).toPdf().get('pdf').then((pdf) => {
         const totalPages = pdf.internal.getNumberOfPages();
         
-        // 如果生成了多頁，嘗試進一步縮小內容
         if (totalPages > 1) {
           pdf.deletePage(2);
           for (let i = totalPages; i > 1; i--) {
             pdf.deletePage(i);
           }
           
-          // 縮小內容以適應單頁
           const pageHeight = pdf.internal.pageSize.getHeight();
           const pageWidth = pdf.internal.pageSize.getWidth();
           pdf.scaleFactor = Math.min(pageWidth / element.offsetWidth, pageHeight / element.offsetHeight);
@@ -179,7 +179,6 @@ export default {
         
         pdf.save(`${formattedDate.value}班表.pdf`);
         
-        // 恢復原始狀態
         elementsToHide.forEach(el => el.style.display = '');
         titleElement.innerText = originalTitle;
         table.style.fontSize = originalFontSize;
