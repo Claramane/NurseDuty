@@ -135,17 +135,24 @@ export default {
 
       const titleElement = element.querySelector('h1');
       const originalTitle = titleElement.innerText;
+      const originalTitleStyle = titleElement.style.cssText;
 
       const year = selectedDate.value.getFullYear();
       const month = selectedDate.value.getMonth() + 1;
       titleElement.innerText = `恩主公麻醉科護理人員${year}年${month}月班表`;
+      titleElement.style.cssText = `
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+        width: 100%;
+      `;
 
       const table = element.querySelector('table');
       const originalFontSize = window.getComputedStyle(table).fontSize;
       table.style.fontSize = '8px';
 
       const opt = {
-        margin: 5,
+        margin: 10,
         filename: `${formattedDate.value}班表.pdf`,
         image: { type: 'jpeg', quality: 1 },
         html2canvas: { 
@@ -179,8 +186,10 @@ export default {
         
         pdf.save(`${formattedDate.value}班表.pdf`);
         
+
         elementsToHide.forEach(el => el.style.display = '');
         titleElement.innerText = originalTitle;
+        titleElement.style.cssText = originalTitleStyle;
         table.style.fontSize = originalFontSize;
       });
     };
