@@ -19,6 +19,7 @@
             {{ getDayName(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day).getDay()) }}
           </th>
           <th>D</th>
+          <th>V</th>
           <th>總時數</th>
         </tr>
       </thead>
@@ -30,6 +31,7 @@
             {{ shift }}
           </td>
           <td>{{ countShifts(nurse.shifts, 'D') }}</td>
+          <td>{{ countShifts(nurse.shifts, 'V') }}</td>
           <td>{{ calculateTotalHours(nurse.shifts) }}</td>
         </tr>
       </tbody>
@@ -94,7 +96,7 @@ export default {
 
     const toggleShift = (nurseIndex, shiftIndex) => {
       const currentShift = monthlySchedule.value[nurseIndex].shifts[shiftIndex]
-      const shiftTypes = ['D', 'A', 'N', 'O', 'K', 'C', 'F', 'E', 'B']
+      const shiftTypes = ['D', 'A', 'N', 'O', 'K', 'C', 'F', 'E', 'B', 'V']
       const nextShiftIndex = (shiftTypes.indexOf(currentShift) + 1) % shiftTypes.length
       const newShift = shiftTypes[nextShiftIndex]
       store.dispatch('schedule/updateShift', { nurseIndex, dayIndex: shiftIndex, newShift })
@@ -110,7 +112,8 @@ export default {
         'shift-f': shift === 'F',
         'shift-e': shift === 'E',
         'shift-b': shift === 'B',
-        'shift-o': shift === 'O'
+        'shift-o': shift === 'O',
+        'shift-v': shift === 'V',
       }
     }
 
@@ -119,7 +122,7 @@ export default {
     const countShifts = (shifts, type) => shifts.filter(shift => shift === type).length
 
     const calculateTotalHours = (shifts) => {
-      const hourMapping = { 'D': 10, 'A': 8, 'N': 8, 'O': 0, 'K': 8, 'C': 8, 'F': 8, 'E': 4, 'B': 8 }
+      const hourMapping = { 'D': 10, 'A': 8, 'N': 8, 'O': 0,'V': 0, 'K': 8, 'C': 8, 'F': 8, 'E': 4, 'B': 8 }
       return shifts.reduce((total, shift) => total + (hourMapping[shift] || 0), 0)
     }
 
