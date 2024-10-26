@@ -295,6 +295,10 @@ th {
   background-color: #FFDAB9;
 }
 
+.shift-v {
+  background-color: chocolate;
+}
+
 .generate-button,
 .save-button,
 .generate-pdf-button {
