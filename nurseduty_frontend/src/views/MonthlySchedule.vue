@@ -83,7 +83,17 @@ export default {
         return
       }
 
-      await store.dispatch('schedule/generateMonthlySchedule')
+      try {
+        // 先重新載入最新的班表模板
+        await store.dispatch('schedule/loadFormulaSchedules')
+        // 確保護士資料也是最新的
+        await store.dispatch('staff/fetchNurses')
+        // 然後再生成月班表
+        await store.dispatch('schedule/generateMonthlySchedule')
+      } catch (error) {
+        console.error('生成月班表時發生錯誤:', error)
+        store.commit('schedule/setError', '生成月班表失敗，請稍後再試')
+      }
     }
 
     const saveMonthlySchedule = () => {
@@ -122,7 +132,7 @@ export default {
     const countShifts = (shifts, type) => shifts.filter(shift => shift === type).length
 
     const calculateTotalHours = (shifts) => {
-      const hourMapping = { 'D': 10, 'A': 8, 'N': 8, 'O': 0,'V': 0, 'K': 8, 'C': 8, 'F': 8, 'E': 4, 'B': 8 }
+      const hourMapping = { 'D': 10, 'A': 8, 'N': 8, 'O': 0, 'V': 0, 'K': 8, 'C': 8, 'F': 8, 'E': 4, 'B': 8 }
       return shifts.reduce((total, shift) => total + (hourMapping[shift] || 0), 0)
     }
 
@@ -158,16 +168,16 @@ export default {
         margin: 10,
         filename: `${formattedDate.value}班表.pdf`,
         image: { type: 'jpeg', quality: 1 },
-        html2canvas: { 
+        html2canvas: {
           scale: 4,
           useCORS: true,
           logging: true,
           dpi: 300,
           letterRendering: true
         },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
           orientation: 'portrait',
           compress: false
         }
@@ -175,20 +185,20 @@ export default {
 
       html2pdf().set(opt).from(element).toPdf().get('pdf').then((pdf) => {
         const totalPages = pdf.internal.getNumberOfPages();
-        
+
         if (totalPages > 1) {
           pdf.deletePage(2);
           for (let i = totalPages; i > 1; i--) {
             pdf.deletePage(i);
           }
-          
+
           const pageHeight = pdf.internal.pageSize.getHeight();
           const pageWidth = pdf.internal.pageSize.getWidth();
           pdf.scaleFactor = Math.min(pageWidth / element.offsetWidth, pageHeight / element.offsetHeight);
         }
-        
+
         pdf.save(`${formattedDate.value}班表.pdf`);
-        
+
 
         elementsToHide.forEach(el => el.style.display = '');
         titleElement.innerText = originalTitle;
