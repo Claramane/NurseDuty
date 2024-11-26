@@ -2,7 +2,7 @@
   <div class="weekly-schedule">
     <h1>{{ formattedDate }}週班表</h1>
     <div class="controls">
-      <DatePicker v-model:value="selectedDate" type="month" :clearable="false" @change="loadSchedule" />
+      <DatePicker v-model:value="selectedDate" type="month" :clearable="false" />
       <div class="buttons-container">
         <button v-for="week in weeksInMonth" :key="week" @click="selectWeek(week)"
           :class="{ active: currentWeek === week }" class="week-button">
@@ -180,6 +180,7 @@ export default {
     }
 
     const loadSchedule = async () => {
+      await store.dispatch('schedule/updateSelectedDate', selectedDate.value)
       await store.dispatch('schedule/fetchMonthlySchedule')
     }
 
