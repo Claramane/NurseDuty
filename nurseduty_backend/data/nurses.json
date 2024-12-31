@@ -1,285 +1,292 @@
 {
-  "lastUpdated": "2023-09-29T12:00:00Z",
-  "nurses": [
-    {
-      "id": 1,
-      "name": "\u738b\u5b50\u5919",
-      "group": 0,
-      "role": "boss",
-      "active": true
-    },
-    {
-      "id": 2,
-      "name": "\u838a\u4f69\u6167",
-      "group": 1,
-      "role": "leader",
-      "active": true
-    },
-    {
-      "id": 3,
-      "name": "\u9ec3\u975c\u73b2",
-      "group": 2,
-      "role": "leader",
-      "active": true
-    },
-    {
-      "id": 4,
-      "name": "\u6d2a\u79c0\u73b2",
-      "group": 0,
-      "role": "member",
-      "active": false
-    },
-    {
-      "id": 5,
-      "name": "\u8521\u79c0\u91d1",
-      "group": 2,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 6,
-      "name": "\u5f35\u6148\u73ee",
-      "group": 3,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 7,
-      "name": "\u8a31\u8212\u60e0",
-      "group": 4,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 8,
-      "name": "\u4f55\u7469\u6167",
-      "group": 5,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 9,
-      "name": "\u6797\u96ea\u7f8e",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 10,
-      "name": "\u8b1d\u4f69\u9675",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 11,
-      "name": "\u9673\u7a1a\u5e73",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 12,
-      "name": "\u674e\u76f8\u541b",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 13,
-      "name": "\u9867\u5fc3\u5982",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 14,
-      "name": "\u8449\u671d\u83e9",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 15,
-      "name": "\u77f3\u80b2\u83c1",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 16,
-      "name": "\u738b\u59ff\u60e0",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 17,
-      "name": "\u674e\u5ba5\u84c1",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 18,
-      "name": "\u9b4f\u51e1\u96c5",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 19,
-      "name": "\u5468\u7a4e\u6607",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 20,
-      "name": "\u8d99\u4ec1\u5091",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 21,
-      "name": "\u65bd\u7469\u7469",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 22,
-      "name": "\u8449\u6021\u5f63",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 23,
-      "name": "\u90b1\u5349\u7f9a",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 24,
-      "name": "\u7f85\u96c5\u6587",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 25,
-      "name": "\u738b\u91cb\u749e",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 26,
-      "name": "\u6e38\u4f73\u84c1",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 27,
-      "name": "\u5f35\u80b2\u84c9",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 28,
-      "name": "\u6234\u57f9\u96c5",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 29,
-      "name": "\u674e\u4f73\u6b23",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 30,
-      "name": "\u738b\u6b23\u5a9a",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 31,
-      "name": "\u6e38\u82b7\u6b23",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 32,
-      "name": "\u6797\u84c1",
-      "group": 0,
-      "role": "member",
-      "active": true
-    },
-    {
-      "id": 33,
-      "name": "\u6d2a\u7389\u6676",
-      "group": 0,
-      "role": "POR",
-      "active": true
-    },
-    {
-      "id": 34,
-      "name": "\u5289\u5bb8\u541b",
-      "group": 0,
-      "role": "POR",
-      "active": true
-    },
-    {
-      "id": 35,
-      "name": "\u8521\u60e0\u5a77",
-      "group": 0,
-      "role": "POR",
-      "active": true
-    },
-    {
-      "id": 36,
-      "name": "\u9673\u807f\u5747",
-      "group": 0,
-      "role": "POR",
-      "active": true
-    },
-    {
-      "id": 37,
-      "name": "\u674e\u5b5f\u4ead",
-      "group": 0,
-      "role": "POR",
-      "active": true
-    },
-    {
-      "id": 38,
-      "name": "\u6f58\u975c\u6021",
-      "group": 0,
-      "role": "POR",
-      "active": true
-    },
-    {
-      "id": 39,
-      "name": "\u9673\u76c8\u84d3",
-      "group": 0,
-      "role": "POR",
-      "active": true
-    },
-    {
-      "id": 40,
-      "name": "\u90ed\u6dd1\u6167",
-      "group": 1,
-      "role": "secretary",
-      "active": true
-    }
-  ]
+"lastUpdated": "2024-12-31T12:00:00Z",
+"nurses": [
+  {
+    "id": 1,
+    "name": "王子夙",
+    "group": 0,
+    "role": "boss",
+    "active": true
+  },
+  {
+    "id": 2,
+    "name": "莊佩慧",
+    "group": 1,
+    "role": "leader",
+    "active": true
+  },
+  {
+    "id": 3,
+    "name": "黃靜玲",
+    "group": 2,
+    "role": "leader",
+    "active": true
+  },
+  {
+    "id": 4,
+    "name": "洪秀玲",
+    "group": 0,
+    "role": "member",
+    "active": false
+  },
+  {
+    "id": 5,
+    "name": "蔡秀金",
+    "group": 2,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 6,
+    "name": "張慈珮",
+    "group": 3,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 7,
+    "name": "許舒惠",
+    "group": 4,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 8,
+    "name": "何瑩慧",
+    "group": 5,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 9,
+    "name": "林雪美",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 10,
+    "name": "謝珮陵",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 11,
+    "name": "陳稚平",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 12,
+    "name": "李相君",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 13,
+    "name": "顧心如",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 14,
+    "name": "葉朝菩",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 15,
+    "name": "石育菁",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 16,
+    "name": "王姿惠",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 17,
+    "name": "任雯怡",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 18,
+    "name": "李宥蓁",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 19,
+    "name": "魏凡雅",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 20,
+    "name": "周穎昇",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 21,
+    "name": "趙仁傑",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 22,
+    "name": "施瑩瑩",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 23,
+    "name": "葉怡彣",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 24,
+    "name": "邱卉羚",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 25,
+    "name": "羅雅文",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 26,
+    "name": "王釋璞",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 27,
+    "name": "游佳蓁",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 28,
+    "name": "張育蓉",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 29,
+    "name": "戴培雅",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 30,
+    "name": "李佳欣",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 31,
+    "name": "王欣媚",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 32,
+    "name": "游芷欣",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 33,
+    "name": "林蓁",
+    "group": 0,
+    "role": "member",
+    "active": true
+  },
+  {
+    "id": 34,
+    "name": "洪玉晶",
+    "group": 0,
+    "role": "POR",
+    "active": true
+  },
+  {
+    "id": 35,
+    "name": "劉宸君",
+    "group": 0,
+    "role": "POR",
+    "active": true
+  },
+  {
+    "id": 36,
+    "name": "蔡惠婷",
+    "group": 0,
+    "role": "POR",
+    "active": true
+  },
+  {
+    "id": 37,
+    "name": "陳聿均",
+    "group": 0,
+    "role": "POR",
+    "active": true
+  },
+  {
+    "id": 38,
+    "name": "李孟亭",
+    "group": 0,
+    "role": "POR",
+    "active": true
+  },
+  {
+    "id": 39,
+    "name": "潘靜怡",
+    "group": 0,
+    "role": "POR",
+    "active": true
+  },
+  {
+    "id": 40,
+    "name": "陳盈蓓",
+    "group": 0,
+    "role": "POR",
+    "active": true
+  },
+  {
+    "id": 41,
+    "name": "郭淑慧",
+    "group": 1,
+    "role": "secretary",
+    "active": true
+  }
+]
 }
